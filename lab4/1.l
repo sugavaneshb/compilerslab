@@ -1,0 +1,98 @@
+%{
+
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+
+struct symtab
+{
+ char symbol[100];
+ int occ;
+ char addr[100];
+}syms[100];
+char optab[100][2];
+char constab[100][2];
+char keyw[100][40];
+
+int symi = 0, opi=0, consi =0, keyi = 0;
+
+int yywrap()
+{
+	return 1;
+}
+
+main()
+{
+  yylex();
+}
+%}
+
+while "while"
+do "do"
+if "if"
+else "else"
+for "for"
+
+%%
+{while}|{do}|{if}|{for}|{else} {  
+			// keywords
+       			int i,chk=1;
+			for(i=0;i<keyi;i++) 
+			  if(!strcmp(keyw[i],yytext)) {chk=0;break;}
+			
+			if(chk==1)
+			 strcpy(keyw[keyi++],yytext);  
+        			}
+[0-9]+|[0-9]*'.'[0-9]+		{
+			// constant	
+			int i,chk=1;
+			for(i=0;i<consi;i++) 
+			  if(!strcmp(constab[i],yytext)) {chk=0;break;}
+			
+			if(chk==1)
+			 strcpy(constab[consi++],yytext);   
+				}
+[\+\-\*/<>&]|":="  {
+			// operators
+			int i,chk=1;
+			for(i=0;i<opi;i++) 
+			  if(!strcmp(optab[i],yytext)) {chk=0;break;}
+			
+			if(chk==1)
+			 strcpy(optab[opi++],yytext);
+		     }
+[a-zA-Z]+ {
+		//symbols
+		int i,chk=1;
+		for(i=0;i<symi;i++) 
+		  if(!strcmp(syms[i].symbol,yytext)) 
+			{chk=0;syms[i].occ++;break;}
+		
+		if(chk==1)
+		{
+		 strcpy(syms[symi++].symbol,yytext) ;
+		 syms[i-1].occ = 1;
+		 strcpy(syms[symi-1].addr,"0x");
+		} 
+	}
+[\n]		{    	int i;
+			printf("\nSymbol Table :\n");
+			for(i=0;i<symi;i++)
+			 printf("%d\t%s\t%d\t%s\n",i+1,syms[i].symbol, syms[i].occ, syms[i].addr);
+
+			printf("\n\nOperator Table:\n");
+			for(i=0;i<opi;i++)
+			 printf("%d\t%s\n",i+1,optab[i]);
+
+			printf("\n\nConstant Table:\n");
+			for(i=0;i<consi;i++)
+			 printf("%d\t%s\n",i+1,constab[i]);
+
+			printf("\n\nKeyword Table:\n");
+			for(i=0;i<keyi;i++)
+			 printf("%d\t%s\n",i+1,keyw[i]);
+		}
+%%
+
+
+

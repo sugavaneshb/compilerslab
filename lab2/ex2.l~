@@ -1,0 +1,67 @@
+%{
+
+#include<stdio.h>
+#include<math.h>
+
+float inp = 0;
+float num1,num2;
+char c;
+int yywrap()
+{
+	return 1;
+}
+float powerthat(float n1,float n2)
+{
+	float ans = 1;
+	while(n2--)
+	{
+		ans*=n1;
+	}
+	return(ans);
+}
+void calculate(float num1,float num2,char c)
+{
+ switch(c)
+ {
+  case '+': printf("%f\n",(num1+num2));break;
+  case '-': printf("%f\n",(num1-num2));break;
+  case '*': printf("%f\n",(num1*num2));break;
+  case '/': {
+  	   if(num2==0) printf("Divide by 0 error\n"); 
+	   else printf("%f\n",(num1/num2));break;
+            }
+  case '^': printf("%f\n",powerthat(num1,num2));break;
+  case 'l': {if((num1-(int)num1==0)&&(num2-(int)num2==0))
+		printf("%d\n",((int)num1<<(int)num2));
+	     else 
+		printf("Invalid arguments");
+	     break;
+		}
+  case 'r': {if((num1-(int)num1==0)&&(num2-(int)num2==0))
+		printf("%d\n",((int)num1>>(int)num2));
+	     else 
+		printf("Invalid arguments");
+	     break;
+		}
+ };
+}
+main()
+{
+  yylex();
+}
+%}
+%%
+[0-9]+ if(inp==1){num2=atof(yytext);calculate(num1,num2,c);inp=0;} else {num1=atof(yytext);inp++;}
+[0-9]+"."[0-9]+ if(inp==1){num2=atof(yytext);calculate(num1,num2,c);inp=0;} else {num1=atof(yytext);inp++;}
+[\+] c='+';
+[-] c='-';
+[\*] c='*';
+[/] c='/';
+[\^] c='^';
+[<<] c='l';
+[>>] c='r';
+// \n printf("Voila\n");
+%%
+
+
+

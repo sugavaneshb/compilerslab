@@ -1,0 +1,27 @@
+%{
+#include "stdio.h"
+#include "stdlib.h"
+#include "math.h"
+#include "y.tab.h"
+extern YYSTYPE yylval;
+%}
+while "while"
+do    "do"
+then  "then"
+oper  [/<>&]
+if    "if"
+else  "else"
+for   "for"
+equals "="
+%%
+			   
+{if}             return IF;
+{then}           return THEN;
+{else}           return ELSE;
+[a-zA-Z]	{	
+			printf("\n %s parsed", yytext);
+			return ID;
+		}
+[ \n]            ECHO;
+.		return yytext[0];
+%%

@@ -1,0 +1,69 @@
+%{
+
+#include<stdio.h>
+#include<math.h>
+
+int inp = 0,c_cnt=0;
+float num[100];
+char c[100];
+int yywrap()
+{
+	return 1;
+}
+void letsdothis()
+{
+	int i =0;
+	if((inp-c_cnt)!=1)
+		printf("Invalid expression");
+	else
+	{
+		for(i=0;i<c_cnt;i++)
+		{
+			num[i+1]=calculate(num[i],num[i+1],c[i]);
+		}
+		printf("%f\n",num[i]);
+	}
+	inp = 0;c_cnt = 0;
+}
+float powerthat(float n1,float n2)
+{
+	float ans = 1;
+	while(n2--)
+	{
+		ans*=n1;
+	}
+	return(ans);
+}
+float calculate(float num1,float num2,char c)
+{
+ switch(c)
+ {
+  case '+': return(num1+num2);break;
+  case '-': return(num1-num2);break;
+  case '*': return(num1*num2);break;
+  case '/': return(num1/num2);break;
+  case '^': return(powerthat(num1,num2));break;
+  case 'l': return((float)((int)num1<<(int)num2));
+  case 'r': return((float)((int)num1>>(int)num2));
+};
+}
+main()
+{
+  yylex();
+}
+%}
+%%
+[0-9]+ if(inp>=0){num[inp]=atoi(yytext);inp++;}
+[0-9]+"."[0-9]+ {num[inp]=atof(yytext);inp++;}
+[\+] {c[c_cnt]='+';c_cnt++;}
+[-] {c[c_cnt]='-';c_cnt++;}
+[\*] {c[c_cnt]='*';c_cnt++;}
+[/] {c[c_cnt]='/';c_cnt++;}
+[\^] {c[c_cnt]='^';c_cnt++;}
+[<<] {c[c_cnt]='l';c_cnt++;}
+[>>] {c[c_cnt]='r';c_cnt++;}
+\n {letsdothis();printf("Voila\n");}
+%%
+
+
+

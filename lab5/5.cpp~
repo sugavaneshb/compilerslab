@@ -1,0 +1,107 @@
+#include<iostream>
+#include<vector>
+#include<cstdio>
+#include<sstream>
+#include<string>
+#include<map>
+
+using namespace std;
+map<char,vector<string> >m;
+map<char,vector<char> > f;
+void first(char ch){
+
+	for(vector<string>::iterator it=m[ch].begin();it!=m[ch].end();it++){
+			string str=(*it);
+			if (str[0]=='(' || str[0]=='{' || str[0]=='[' || str[0]=='$' || (str[0]>='a' &&str[0]<='z'))
+				cout<<str[0]<<" ";
+			else
+				first(str[0]);
+
+				}
+				
+
+	}
+
+void follow(char ch){
+	
+
+	for(vector<string>::iterator it=m[ch].begin();it!=m[ch].end();it++){
+		string str=(*it);
+		for(int i=0;i<str.length();i++)
+			if (!(str[i]>='A' && str[i]<='Z') )	
+				if (i>=1){
+					f[str[i-1]].push_back(str[i]);
+					}
+	}
+
+
+}
+int main(){
+	freopen("ip.txt","r",stdin);
+	string str;
+	vector<char> P;
+	
+	map<char,bool> flag;
+	while(getline(cin,str)){
+		
+		stringstream ss;
+		ss<<str;
+		string s2,s3;
+		char s1;
+		ss>>s1>>s3>>s2;
+		cout<<s1<<" "<<s2<<endl;
+		string s="";
+		int i=0;
+		while(i<s2.length()){
+			s="";
+			while(s2[i]!='/' && i<s2.length())
+				s+=s2[i++];
+			i++;
+			m[s1].push_back(s);	
+			}
+		
+		if (flag[s1]==false){
+		P.push_back(s1);
+		flag[s1]=true;
+			}
+	}
+
+	for(int i=0;i<P.size();i++){
+		cout<<endl<<P[i]<<" : "<<endl;
+		for(vector<string>::iterator it=m[P[i]].begin();it!=m[P[i]].end();it++)
+			cout<<(*it)<<" ";
+		}
+
+
+	cout<<endl<<endl;
+
+	for(int i=0;i<P.size();i++){
+		cout<<P[i]<<":...."<<endl;
+		first(P[i]);
+
+
+		}
+
+	//follow
+
+	for(int i=0;i<P.size();i++){
+		cout<<P[i]<<":...."<<endl;
+		follow(P[i]);
+
+
+		}
+	cout<<"Follows:\n\n";
+	for(int i=0;i<P.size();i++){
+		cout<<"\nfollow of "<<P[i]<<" : ";
+		for(int j=0;j<f[P[i]].size();j++){
+			cout<<f[P[i]][j]<<" ";
+		
+			}
+
+		}
+		
+
+
+
+return 0;
+}

@@ -1,0 +1,8 @@
+lex filename.l
+cc lex.yy.c -o ob_filename
+./ob_filename
+
+yacc -d filename.y
+lex filename.l
+cc lex.yy.c -o -ob_filename
+./ob_filename
